@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Knightly Photo Booth | Card Customizer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0a0a0a; }
+        ::-webkit-scrollbar-thumb { background: #262626; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #404040; }
+        .toggle-checkbox:checked { right: 0; border-color: #f59e0b; }
+        .toggle-checkbox:checked + .toggle-label { background-color: #f59e0b; }
+    </style>
+</head>
+<body class="bg-neutral-900 text-neutral-100 antialiased h-screen overflow-hidden">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useMemo } = React;
+
+        const Icon = ({ name, className = "w-4 h-4" }) => {
+            useEffect(() => {
+                if (window.lucide) {
+                    window.lucide.createIcons();
+                }
+            }, [name]);
+            return <i data-lucide={name} className={className}></i>;
+        };
+
+        const App = () => {
+            const [activeTab, setActiveTab] = useState('content');
+            const [copySuccess, setCopySuccess] = useState(false);
+            
+            const [config, setConfig] = useState({
+                name: "Gabriel Knight",
+                tagline: "Luxury Photo Booths",
+                review: "Melbourne's bespoke experience.",
+                footer: "Melbourne • Victoria • Australia",
+                enableRotation: true,
+                colors: {
+                    bgDark: "#0f1412",
+                    gold: "#dac386",
+                    white: "#ffffff",
+                    olive: "#847c57",
+                },
+                images: {
+                    logo: "https://raw.githubusercontent.com/theknightlyphotobooth/Images-/194d47a8ad24d9fef8e9d6f9c3a28f9fad5fc1e5/the%20knightly%20logo.png",
+                    profilePhoto: "https://raw.githubusercontent.com/theknightlyphotobooth/Images-/3187354caa0a71d12c7dd353c29e0f0cc30e53eb/Gabriel%20Knight.png",
+                    coinBack: "https://raw.githubusercontent.com/theknightlyphotobooth/Images-/01668a04aceed0bceecc35b363e5115693d4dd63/Back.jpg"
+                },
+                links: {
+                    quote: "https://script.google.com/macros/s/AKfycbw5XcIU0Y1xN47xpKtw0YrIoO9PrQ-C339i1TBean9LFZpu-ZG5egsEW468FdUhFRAm/exec?page=quote",
+                    dates: "https://script.google.com/macros/s/AKfycbw5XcIU0Y1xN47xpKtw0YrIoO9PrQ-C339i1TBean9LFZpu-ZG5egsEW468FdUhFRAm/exec?page=calendar",
+                    phone: "+61422730144",
+                    email: "hello@knightlyphotobooth.com.au",
+                    website: "https://knightlyphotobooth.com.au",
+                    facebook: "https://www.facebook.com/theknightlyphotobooth/",
+                    instagram: "https://www.instagram.com/theknightlyphotobooth/",
+                    tiktok: "https://www.tiktok.com/@theknightlyphotobooth"
+                }
+            });
+
+            const handleInputChange = (section, key, value) => {
+                setConfig(prev => ({
+                    ...prev,
+                    [section]: { ...prev[section], [key]: value }
+                }));
+            };
+
+            const handleTopLevelChange = (key, value) => {
+                setConfig(prev => ({ ...prev, [key]: value }));
+            };
+
+            const generatedHtml = useMemo(() => {
+                const rotationStyle = config.enableRotation 
+                    ? `animation: coinSpin 12s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;`
+                    : `transform: rotateY(0deg);`;
+
+                return `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>${config.name} | Digital Card</title>
+    <meta name="theme-color" content="${config.colors.bgDark}">
+    <script src="https://unpkg.com/lucide@latest"><\/script>
+    <style>
+        :root {
+            --bg-dark: ${config.colors.bgDark}; 
+            --gold: ${config.colors.gold};    
+            --white: ${config.colors.white};
+            --olive: ${config.colors.olive};   
+            --glass: rgba(218, 195, 134, 0.08);
+            --glass-heavy: rgba(15, 20, 18, 0.95);
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--white);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center; 
+            min-height: 100vh;
+            padding: 10px; 
+            overflow-x: hidden; 
+            position: relative;
+        }
+
+        #dust-container {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            background: radial-gradient(circle at center, #1d2523 0%, var(--bg-dark) 100%);
+            pointer-events: none;
+        }
+
+        .dust-particle {
+            position: absolute;
+            background: var(--gold);
+            border-radius: 50%;
+            opacity: 0;
+            pointer-events: none;
+            box-shadow: 0 0 6px var(--gold);
+            animation: floatDust linear infinite;
+        }
+
+        @keyframes floatDust {
+            0% { transform: translateY(10vh) translateX(0); opacity: 0; }
+            20% { opacity: 0.6; }
+            80% { opacity: 0.6; }
+            100% { transform: translateY(-110vh) translateX(40px); opacity: 0; }
+        }
+
+        .card {
+            width: 100%;
+            max-width: 360px; 
+            background: var(--glass);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-radius: 35px;
+            border: 1px solid rgba(218, 195, 134, 0.3);
+            padding: 22px 20px; 
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            animation: cardEntrance 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        .card::after {
+            content: "";
+            position: absolute;
+            top: -50%; left: -100%; width: 25%; height: 200%;
+            background: linear-gradient(to right, transparent, rgba(218, 195, 134, 0.2), transparent);
+            transform: rotate(30deg);
+            animation: sweep 6s infinite linear;
+        }
+
+        @keyframes sweep { 0% { left: -100%; } 20% { left: 150%; } 100% { left: 150%; } }
+        @keyframes cardEntrance { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+        .logo-container { margin-bottom: 12px; }
+        .main-logo { width: 145px; filter: drop-shadow(0 0 10px rgba(218, 195, 134, 0.3)); }
+        .tagline { font-size: 9px; color: var(--gold); letter-spacing: 2.5px; text-transform: uppercase; margin-top: 2px; }
+
+        .coin-wrapper {
+            width: 110px; height: 110px; 
+            margin: 0 auto 12px;
+            perspective: 1000px;
+        }
+
+        .profile-media-container {
+            width: 100%; height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            ${rotationStyle}
+        }
+
+        .face {
+            position: absolute;
+            width: 100%; height: 100%;
+            backface-visibility: hidden;
+            border-radius: 50%;
+            border: 2px solid var(--gold);
+            padding: 3px;
+            background: #000;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .face-front { transform: rotateY(0deg); }
+        .face-back { 
+            transform: rotateY(180deg);
+            background-image: url('${config.images.coinBack}');
+            background-size: cover;
+            background-position: center;
+        }
+
+        @keyframes coinSpin {
+            0% { transform: rotateY(0deg); }
+            58.33% { transform: rotateY(360deg); } 
+            100% { transform: rotateY(360deg); }   
+        }
+
+        .profile-image { 
+            width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block;
+        }
+
+        .user-name {
+            font-size: 20px; font-weight: 700; color: var(--white);
+            margin: 2px 0; letter-spacing: 1px;
+        }
+
+        .stars-container {
+            display: flex; justify-content: center; gap: 4px;
+            margin: 0 0 10px; height: 20px; align-items: center;
+        }
+
+        .star {
+            color: var(--gold); font-size: 15px; display: inline-block;
+            animation: starWave 4s ease-in-out infinite;
+        }
+
+        @keyframes starWave {
+            0%, 100% { transform: translateY(0); }
+            25% { transform: translateY(-5px); }
+            50% { transform: translateY(0); }
+            75% { transform: translateY(0); } 
+        }
+
+        .review-text { font-size: 12px; font-style: italic; opacity: 0.8; margin-bottom: 18px; }
+        .actions { display: grid; gap: 10px; }
+
+        .btn {
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            width: 100%; padding: 14px; border-radius: 14px;
+            text-decoration: none; font-weight: 800; font-size: 11px;
+            text-transform: uppercase; letter-spacing: 1.2px;
+            cursor: pointer; border: none; transition: all 0.3s ease;
+        }
+
+        .btn-primary { background: var(--gold); color: var(--bg-dark); box-shadow: 0 10px 30px rgba(218, 195, 134, 0.3); }
+        .btn-outline { background: rgba(255, 255, 255, 0.03); color: var(--white); border: 1px solid var(--olive); }
+        .btn-save { background: var(--white); color: var(--bg-dark); }
+        
+        #social-sheet {
+            position: absolute;
+            bottom: -100%;
+            left: 0;
+            width: 100%;
+            background: var(--glass-heavy);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border-top: 1px solid var(--gold);
+            border-radius: 35px 35px 0 0;
+            padding: 30px 20px;
+            z-index: 100;
+            transition: bottom 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        #social-sheet.active {
+            bottom: 0;
+        }
+
+        .sheet-handle {
+            width: 40px;
+            height: 4px;
+            background: rgba(218, 195, 134, 0.4);
+            border-radius: 2px;
+            margin: -15px auto 20px;
+        }
+
+        .sheet-title {
+            color: var(--gold);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .close-sheet {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: var(--gold);
+            cursor: pointer;
+            opacity: 0.7;
+        }
+
+        .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .footer { margin-top: 15px; font-size: 9px; color: var(--olive); letter-spacing: 2px; }
+
+        .spinner {
+            display: none; width: 14px; height: 14px;
+            border: 2px solid rgba(0,0,0,0.1); border-top: 2px solid #000;
+            border-radius: 50%; animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div id="dust-container"><\/div>
+    
+    <div class="card">
+        <div id="social-sheet">
+            <div class="sheet-handle"><\/div>
+            <div class="close-sheet" onclick="toggleSocials()"><i data-lucide="x"><\/i><\/div>
+            <div class="sheet-title">Connect With Us<\/div>
+            <div class="actions">
+                <button onclick="handleNav('${config.links.facebook}')" class="btn btn-outline">
+                    <i data-lucide="facebook" style="width:16px"><\/i> Facebook
+                </button>
+                <button onclick="handleNav('${config.links.instagram}')" class="btn btn-outline">
+                    <i data-lucide="instagram" style="width:16px"><\/i> Instagram
+                </button>
+                <button onclick="handleNav('${config.links.tiktok}')" class="btn btn-outline">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z"/><\/svg> TikTok
+                </button>
+            </div>
+        </div>
+
+        <div class="logo-container">
+            <img src="${config.images.logo}" alt="Logo" class="main-logo">
+            <div class="tagline">${config.tagline}<\/div>
+        </div>
+
+        <div class="coin-wrapper">
+            <div class="profile-media-container">
+                <div class="face face-front">
+                    <img src="${config.images.profilePhoto}" class="profile-image" alt="Profile Photo">
+                <\/div>
+                <div class="face face-back"><\/div>
+            <\/div>
+        <\/div>
+
+        <div class="user-name">${config.name}<\/div>
+
+        <div class="stars-container">
+            <span class="star" style="animation-delay: 0s">★<\/span>
+            <span class="star" style="animation-delay: 0.2s">★<\/span>
+            <span class="star" style="animation-delay: 0.4s">★<\/span>
+            <span class="star" style="animation-delay: 0.6s">★<\/span>
+            <span class="star" style="animation-delay: 0.8s">★<\/span>
+        <\/div>
+
+        <div class="review-text">"${config.review}"<\/div>
+
+        <div class="actions">
+            <button onclick="handleNav('${config.links.quote}')" class="btn btn-primary">
+                <i data-lucide="file-text" style="width:16px"><\/i> Request Quote
+            </button>
+
+            <div class="contact-grid">
+                <button onclick="generateVCard()" class="btn btn-save" id="saveBtn">
+                    <i data-lucide="user-plus" id="saveIcon" style="width:16px"><\/i>
+                    <div class="spinner" id="saveSpinner"><\/div>
+                    Save
+                </button>
+                <button onclick="handleNav('${config.links.dates}')" class="btn btn-outline">
+                    <i data-lucide="calendar" style="width:16px"><\/i> Dates
+                </button>
+            <\/div>
+            
+            <div class="contact-grid">
+                <button onclick="handleNav('tel:${config.links.phone}')" class="btn btn-outline">
+                    <i data-lucide="phone" style="width:16px"><\/i> Call
+                </button>
+                <button onclick="handleNav('sms:${config.links.phone}')" class="btn btn-outline">
+                    <i data-lucide="message-square" style="width:16px"><\/i> SMS
+                </button>
+            <\/div>
+
+            <button onclick="toggleSocials()" class="btn btn-outline">
+                <i data-lucide="share-2" style="width:16px"><\/i> Our Socials
+            </button>
+
+            <button onclick="sendEmail()" class="btn btn-outline">
+                <i data-lucide="mail" style="width:16px"><\/i> Email Us
+            </button>
+        <\/div>
+        <div class="footer">${config.footer}<\/div>
+    <\/div>
+
+    <script>
+        lucide.createIcons();
+
+        function handleNav(url) {
+            window.open(url, '_blank');
+        }
+
+        function toggleSocials() {
+            const sheet = document.getElementById('social-sheet');
+            sheet.classList.toggle('active');
+        }
+
+        function createParticles() {
+            const container = document.getElementById('dust-container');
+            container.innerHTML = '';
+            for (let i = 0; i < 30; i++) {
+                const p = document.createElement('div');
+                p.className = 'dust-particle';
+                const size = Math.random() * 2 + 1;
+                p.style.width = p.style.height = \`\${size}px\`;
+                p.style.left = \`\${Math.random() * 100}%\`;
+                p.style.top = \`\${Math.random() * 100}%\`;
+                p.style.animationDuration = \`\${Math.random() * 8 + 8}s\`;
+                p.style.animationDelay = \`\${Math.random() * 10}s\`;
+                container.appendChild(p);
+            }
+        }
+        window.onload = createParticles;
+
+        function sendEmail() {
+            const ref = \`KPB\${Math.floor(1000 + Math.random() * 9000)}\`;
+            const sub = encodeURIComponent(\`Booking Enquiry - \${ref}\`);
+            const body = encodeURIComponent(\`Hi ${config.name.split(' ')[0]},\\n\\nI'd like to enquiry about your services.\\n\\nRef: \${ref}\`);
+            handleNav(\`mailto:${config.links.email}?subject=\${sub}&body=\${body}\`);
+        }
+
+        async function getB64(url) {
+            try {
+                const response = await fetch(url + '?t=' + new Date().getTime());
+                if (!response.ok) throw new Error('Network response was not ok');
+                const blob = await response.blob();
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onloadend = () => {
+                        const base64data = reader.result.split(',')[1];
+                        resolve(base64data);
+                    };
+                    reader.onerror = reject;
+                    reader.readAsDataURL(blob);
+                });
+            } catch (e) { 
+                console.error("VCard Image Error:", e);
+                return null; 
+            }
+        }
+
+        async function generateVCard() {
+            const btn = document.getElementById('saveBtn');
+            const icon = document.getElementById('saveIcon');
+            const spin = document.getElementById('saveSpinner');
+            btn.style.opacity = "0.7"; icon.style.display = "none"; spin.style.display = "block";
+
+            const profileUrl = "${config.images.profilePhoto}";
+            const logoUrl = "${config.images.logo}";
+            
+            const [pB64, lB64] = await Promise.all([getB64(profileUrl), getB64(logoUrl)]);
+
+            const vCardContent = [
+                "BEGIN:VCARD", 
+                "VERSION:3.0", 
+                "FN:${config.name}", 
+                "TITLE:${config.tagline}",
+                "ORG:The Knightly Photo Booth",
+                "TEL;TYPE=CELL,VOICE:${config.links.phone}", 
+                "EMAIL;TYPE=PREF,INTERNET:${config.links.email}",
+                "URL;TYPE=WORK:${config.links.website}",
+                "URL;TYPE=Instagram:${config.links.instagram}",
+                "URL;TYPE=Facebook:${config.links.facebook}",
+                "URL;TYPE=TikTok:${config.links.tiktok}",
+                pB64 ? \`PHOTO;TYPE=PNG;ENCODING=b:\${pB64}\` : "",
+                lB64 ? \`LOGO;TYPE=PNG;ENCODING=b:\${lB64}\` : "", 
+                "REV:" + new Date().toISOString(),
+                "END:VCARD"
+            ].filter(line => line.trim() !== "").join("\\r\\n");
+
+            const blob = new Blob([vCardContent], {type: 'text/vcard;charset=utf-8'});
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = "${config.name.replace(' ', '_')}.vcf";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            setTimeout(() => {
+                btn.style.opacity = "1"; icon.style.display = "block"; spin.style.display = "none";
+            }, 1000);
+        }
+    <\/script>
+</body>
+</html>`;
+            }, [config]);
+
+            const copyToClipboard = () => {
+                const textArea = document.createElement('textarea');
+                textArea.value = generatedHtml;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                setCopySuccess(true);
+                setTimeout(() => setCopySuccess(false), 2000);
+            };
+
+            return (
+                <div className="flex flex-col lg:flex-row h-screen">
+                    <div className="w-full lg:w-96 bg-neutral-950 border-r border-neutral-800 flex flex-col h-full overflow-y-auto">
+                        <div className="p-6 border-b border-neutral-800 flex justify-between items-center bg-neutral-950 sticky top-0 z-20">
+                            <h1 className="text-xl font-bold flex items-center gap-2 text-amber-500">
+                                <Icon name="settings" className="w-5 h-5" /> KPB Builder
+                            </h1>
+                            <button 
+                                onClick={copyToClipboard}
+                                className="flex items-center gap-2 px-4 py-2 bg-amber-500 hover:bg-amber-400 text-black rounded-lg text-sm font-bold transition-all shadow-lg"
+                            >
+                                <Icon name={copySuccess ? "check" : "copy"} />
+                                {copySuccess ? 'Copied' : 'Get HTML'}
+                            </button>
+                        </div>
+
+                        <nav className="flex bg-neutral-950/50">
+                            {[
+                                { id: 'content', icon: 'type', label: 'Text' },
+                                { id: 'style', icon: 'palette', label: 'Style' },
+                                { id: 'media', icon: 'image', label: 'Media' },
+                                { id: 'links', icon: 'share-2', label: 'Links' }
+                            ].map(tab => (
+                                <button
+                                    key={tab.id}
+                                    onClick={() => setActiveTab(tab.id)}
+                                    className={`flex-1 py-4 text-[10px] uppercase tracking-widest font-bold border-b-2 transition-all ${
+                                        activeTab === tab.id ? 'border-amber-500 text-amber-500 bg-neutral-900/50' : 'border-transparent text-neutral-500'
+                                    }`}
+                                >
+                                    <Icon name={tab.icon} className="w-4 h-4 mx-auto mb-1" />
+                                    {tab.label}
+                                </button>
+                            ))}
+                        </nav>
+
+                        <div className="p-6 space-y-6">
+                            {activeTab === 'content' && (
+                                <div className="space-y-4">
+                                    <Input label="Name" value={config.name} onChange={v => handleTopLevelChange('name', v)} />
+                                    <Input label="Tagline" value={config.tagline} onChange={v => handleTopLevelChange('tagline', v)} />
+                                    <Input label="Review Quote" value={config.review} onChange={v => handleTopLevelChange('review', v)} />
+                                    <Input label="Footer" value={config.footer} onChange={v => handleTopLevelChange('footer', v)} />
+                                </div>
+                            )}
+
+                            {activeTab === 'style' && (
+                                <div className="space-y-6">
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <Color label="BG Color" value={config.colors.bgDark} onChange={v => handleInputChange('colors', 'bgDark', v)} />
+                                        <Color label="Gold Accent" value={config.colors.gold} onChange={v => handleInputChange('colors', 'gold', v)} />
+                                        <Color label="Text White" value={config.colors.white} onChange={v => handleInputChange('colors', 'white', v)} />
+                                        <Color label="Muted Text" value={config.colors.olive} onChange={v => handleInputChange('colors', 'olive', v)} />
+                                    </div>
+                                    <div className="flex items-center justify-between p-4 bg-neutral-900 border border-neutral-800 rounded-xl">
+                                        <div className="flex flex-col">
+                                            <span className="text-xs font-bold text-neutral-100">Spinning Profile</span>
+                                            <span className="text-[10px] text-neutral-500">Toggle rotation animation</span>
+                                        </div>
+                                        <label className="relative inline-flex items-center cursor-pointer">
+                                            <input 
+                                                type="checkbox" 
+                                                checked={config.enableRotation}
+                                                onChange={(e) => handleTopLevelChange('enableRotation', e.target.checked)}
+                                                className="sr-only peer"
+                                            />
+                                            <div className="w-11 h-6 bg-neutral-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-500"></div>
+                                        </label>
+                                    </div>
+                                </div>
+                            )}
+
+                            {activeTab === 'media' && (
+                                <div className="space-y-4">
+                                    <Input label="Logo URL" value={config.images.logo} onChange={v => handleInputChange('images', 'logo', v)} />
+                                    <Input label="Profile Photo" value={config.images.profilePhoto} onChange={v => handleInputChange('images', 'profilePhoto', v)} />
+                                    <Input label="Coin Back Image" value={config.images.coinBack} onChange={v => handleInputChange('images', 'coinBack', v)} />
+                                </div>
+                            )}
+
+                            {activeTab === 'links' && (
+                                <div className="space-y-4">
+                                    <Input label="Website" value={config.links.website} onChange={v => handleInputChange('links', 'website', v)} />
+                                    <Input label="Quote Link" value={config.links.quote} onChange={v => handleInputChange('links', 'quote', v)} />
+                                    <Input label="Calendar Link" value={config.links.dates} onChange={v => handleInputChange('links', 'dates', v)} />
+                                    <Input label="Phone" value={config.links.phone} onChange={v => handleInputChange('links', 'phone', v)} />
+                                    <Input label="Email" value={config.links.email} onChange={v => handleInputChange('links', 'email', v)} />
+                                    <Input label="Instagram" value={config.links.instagram} onChange={v => handleInputChange('links', 'instagram', v)} />
+                                    <Input label="Facebook" value={config.links.facebook} onChange={v => handleInputChange('links', 'facebook', v)} />
+                                    <Input label="TikTok" value={config.links.tiktok} onChange={v => handleInputChange('links', 'tiktok', v)} />
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="flex-1 bg-neutral-900 p-8 flex items-center justify-center overflow-hidden relative">
+                        <div className="absolute top-4 left-4 flex items-center gap-2 text-neutral-500 text-sm font-bold uppercase tracking-widest">
+                            <Icon name="eye" /> Live Preview
+                        </div>
+                        <div className="w-full max-w-[375px] h-[750px] bg-black rounded-[50px] shadow-[0_0_100px_rgba(0,0,0,0.5)] border-[12px] border-neutral-950 overflow-hidden relative transform scale-90 lg:scale-100 ring-1 ring-white/10">
+                            <iframe 
+                                title="Preview"
+                                srcDoc={generatedHtml}
+                                className="w-full h-full border-none"
+                            />
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const Input = ({ label, value, onChange }) => (
+            <div className="space-y-1">
+                <label className="text-[10px] text-neutral-500 font-bold uppercase tracking-widest ml-1">{label}</label>
+                <input 
+                    type="text" 
+                    value={value} 
+                    onChange={(e) => onChange(e.target.value)}
+                    className="w-full bg-neutral-900 border border-neutral-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-amber-500 transition-all text-neutral-100"
+                />
+            </div>
+        );
+
+        const Color = ({ label, value, onChange }) => (
+            <div className="space-y-1">
+                <label className="text-[10px] text-neutral-500 font-bold uppercase tracking-widest ml-1">{label}</label>
+                <div className="flex items-center gap-2 bg-neutral-900 border border-neutral-800 rounded-xl p-2 h-[50px]">
+                    <input 
+                        type="color" 
+                        value={value} 
+                        onChange={(e) => onChange(e.target.value)}
+                        className="w-8 h-8 rounded-lg bg-transparent border-none cursor-pointer overflow-hidden"
+                    />
+                    <span className="text-xs font-mono text-neutral-400 uppercase">{value}</span>
+                </div>
+            </div>
+        );
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
