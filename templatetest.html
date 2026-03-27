@@ -1,0 +1,520 @@
+import React, { useState, useEffect, useMemo } from 'react';
+import { 
+  Layout, 
+  Type, 
+  Eye, 
+  Palette, 
+  Sparkles, 
+  Image as ImageIcon, 
+  Share2, 
+  Copy, 
+  Check, 
+  UserPlus, 
+  Phone, 
+  MessageSquare, 
+  Mail, 
+  X, 
+  FileText, 
+  ChevronLeft, 
+  ChevronRight, 
+  PanelLeftClose, 
+  PanelLeft, 
+  MousePointer2 
+} from 'lucide-react';
+
+const App = () => {
+    const [activeTab, setActiveTab] = useState('content');
+    const [copySuccess, setCopySuccess] = useState(false);
+    const [showConfig, setShowConfig] = useState(true);
+    
+    const [config, setConfig] = useState({
+        name: "Gabriel Knight",
+        tagline: "Luxury Photo Booths",
+        review: "Melbourne's bespoke experience.",
+        footer: "Melbourne • Victoria • Australia",
+        enableRotation: true,
+        enableSweep: true,
+        sweepDirection: 'right', 
+        entranceAnim: 'slideUp', 
+        bgEffect: 'dust', 
+        colors: {
+            bgDark: "#0f1412",
+            gold: "#dac386",
+            white: "#ffffff",
+            olive: "#847c57",
+            baseGlow: "#1d2523"
+        },
+        buttonLabels: {
+            quote: "Request Quote",
+            save: "Save Contact",
+            call: "Call",
+            sms: "SMS",
+            socials: "Our Socials",
+            email: "Email Us"
+        },
+        images: {
+            logo: "https://raw.githubusercontent.com/theknightlyphotobooth/Images-/194d47a8ad24d9fef8e9d6f9c3a28f9fad5fc1e5/the%20knightly%20logo.png",
+            profilePhoto: "https://raw.githubusercontent.com/theknightlyphotobooth/Images-/3187354caa0a71d12c7dd353c29e0f0cc30e53eb/Gabriel%20Knight.png",
+            coinBack: "https://raw.githubusercontent.com/theknightlyphotobooth/Images-/01668a04aceed0bceecc35b363e5115693d4dd63/Back.jpg"
+        },
+        links: {
+            baseUrl: "https://script.google.com/macros/s/AKfycbw5XcIU0Y1xN47xpKtw0YrIoO9PrQ-C339i1TBean9LFZpu-ZG5egsEW468FdUhFRAm/exec",
+            phone: "+61422730144",
+            email: "hello@knightlyphotobooth.com.au",
+            website: "https://knightlyphotobooth.com.au",
+            facebook: "https://www.facebook.com/theknightlyphotobooth/",
+            instagram: "https://www.instagram.com/theknightlyphotobooth/",
+            tiktok: "https://www.tiktok.com/@theknightlyphotobooth"
+        },
+        visibility: {
+            tagline: true,
+            stars: true,
+            review: true,
+            quoteBtn: true,
+            saveBtn: true,
+            callBtn: true,
+            smsBtn: true,
+            socialBtn: true,
+            emailBtn: true,
+            footer: true,
+            profilePhoto: true
+        }
+    });
+
+    const handleInputChange = (section, key, value) => {
+        setConfig(prev => ({
+            ...prev,
+            [section]: { ...prev[section], [key]: value }
+        }));
+    };
+
+    const handleTopLevelChange = (key, value) => {
+        setConfig(prev => ({ ...prev, [key]: value }));
+    };
+
+    const generatedHtml = useMemo(() => {
+        const rotationStyle = config.enableRotation && config.visibility.profilePhoto
+            ? `animation: coinSpin 12s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;`
+            : `transform: rotateY(0deg);`;
+
+        const entranceAnimations = {
+            slideUp: `@keyframes cardEntrance { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }`,
+            zoomIn: `@keyframes cardEntrance { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }`,
+            fade: `@keyframes cardEntrance { from { opacity: 0; } to { opacity: 1; } }`
+        };
+
+        const sweepAnims = {
+            right: `.card::after { top: -50%; left: -100%; width: 25%; height: 200%; background: linear-gradient(to right, transparent, rgba(218, 195, 134, 0.2), transparent); transform: rotate(30deg); animation: sweepRight 6s infinite linear; } @keyframes sweepRight { 0% { left: -100%; } 20% { left: 150%; } 100% { left: 150%; } }`,
+            left: `.card::after { top: -50%; right: -100%; width: 25%; height: 200%; background: linear-gradient(to left, transparent, rgba(218, 195, 134, 0.2), transparent); transform: rotate(30deg); animation: sweepLeft 6s infinite linear; } @keyframes sweepLeft { 0% { right: -100%; } 20% { right: 150%; } 100% { right: 150%; } }`,
+            down: `.card::after { left: -50%; top: -100%; height: 25%; width: 200%; background: linear-gradient(to bottom, transparent, rgba(218, 195, 134, 0.2), transparent); transform: rotate(-10deg); animation: sweepDown 6s infinite linear; } @keyframes sweepDown { 0% { top: -100%; } 20% { top: 150%; } 100% { top: 150%; } }`,
+            up: `.card::after { left: -50%; bottom: -100%; height: 25%; width: 200%; background: linear-gradient(to top, transparent, rgba(218, 195, 134, 0.2), transparent); transform: rotate(-10deg); animation: sweepUp 6s infinite linear; } @keyframes sweepUp { 0% { bottom: -100%; } 20% { bottom: 150%; } 100% { bottom: 150%; } }`
+        };
+
+        return `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>${config.name} | Digital Card</title>
+    <meta name="theme-color" content="${config.colors.bgDark}">
+    <script src="https://unpkg.com/lucide@latest"><\/script>
+    <style>
+        :root { 
+            --bg-dark: ${config.colors.bgDark}; 
+            --gold: ${config.colors.gold}; 
+            --white: ${config.colors.white}; 
+            --olive: ${config.colors.olive}; 
+            --base-glow: ${config.colors.baseGlow};
+            --glass: rgba(218, 195, 134, 0.08); 
+        }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg-dark); color: var(--white); font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 10px; overflow-x: hidden; position: relative; }
+        
+        #bg-canvas { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            z-index: -1; 
+            background: radial-gradient(circle at center, var(--base-glow) 0%, var(--bg-dark) 100%); 
+            pointer-events: none; 
+        }
+
+        .particle { position: absolute; background: var(--gold); border-radius: 50%; opacity: 0; pointer-events: none; box-shadow: 0 0 6px var(--gold); }
+        @keyframes floatDust { 0% { transform: translateY(10vh) translateX(0); opacity: 0; } 20% { opacity: 0.6; } 80% { opacity: 0.6; } 100% { transform: translateY(-110vh) translateX(40px); opacity: 0; } }
+        @keyframes rainGlitter { 0% { transform: translateY(-10vh) rotate(0deg); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateY(110vh) rotate(360deg); opacity: 0; } }
+        
+        .card { width: 100%; max-width: 360px; background: var(--glass); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border-radius: 35px; border: 1px solid rgba(218, 195, 134, 0.3); padding: 22px 20px; box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8); text-align: center; position: relative; overflow: hidden; animation: cardEntrance 1s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        .card::after { content: ""; position: absolute; pointer-events: none; z-index: 1; }
+        ${config.enableSweep ? sweepAnims[config.sweepDirection] : ''}
+        ${entranceAnimations[config.entranceAnim]}
+
+        .logo-container { margin-bottom: 12px; transition: all 0.5s ease; }
+        .main-logo { width: ${config.visibility.profilePhoto ? '145px' : '220px'}; filter: drop-shadow(0 0 10px rgba(218, 195, 134, 0.3)); transition: width 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .tagline { font-size: 9px; color: var(--gold); letter-spacing: 2.5px; text-transform: uppercase; margin-top: 2px; }
+        
+        .coin-wrapper { width: 110px; height: 110px; margin: 0 auto 12px; perspective: 1000px; display: ${config.visibility.profilePhoto ? 'block' : 'none'}; }
+        .profile-media-container { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; ${rotationStyle} }
+        .face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 50%; border: 2px solid var(--gold); padding: 3px; background: #000; overflow: hidden; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .face-front { transform: rotateY(0deg); }
+        .face-back { transform: rotateY(180deg); background-image: url('${config.images.coinBack}'); background-size: cover; background-position: center; }
+        @keyframes coinSpin { 0% { transform: rotateY(0deg); } 58.33% { transform: rotateY(360deg); } 100% { transform: rotateY(360deg); } }
+        
+        .profile-image { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block; }
+        .user-name { font-size: 20px; font-weight: 700; color: var(--white); margin: ${config.visibility.profilePhoto ? '2px 0' : '10px 0 2px'}; letter-spacing: 1px; }
+        
+        .stars-container { display: flex; justify-content: center; gap: 4px; margin: 0 0 10px; height: 20px; align-items: center; }
+        .star { color: var(--gold); font-size: 15px; display: inline-block; animation: starWave 2.5s ease-in-out infinite; }
+        @keyframes starWave { 0%, 60%, 100% { transform: translateY(0); } 30% { transform: translateY(-3.5px); } }
+        
+        .review-text { font-size: 12px; font-style: italic; opacity: 0.8; margin-bottom: 18px; }
+        .actions { display: grid; gap: 10px; position: relative; z-index: 2; }
+        .btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 14px; border-radius: 14px; text-decoration: none; font-weight: 800; font-size: 11px; text-transform: uppercase; letter-spacing: 1.2px; cursor: pointer; border: none; transition: all 0.3s ease; }
+        .btn-primary { background: var(--gold); color: var(--bg-dark); box-shadow: 0 10px 30px rgba(218, 195, 134, 0.3); }
+        .btn-outline { background: rgba(255, 255, 255, 0.03); color: var(--white); border: 1px solid var(--olive); }
+        .btn-save { background: var(--white); color: var(--bg-dark); }
+        
+        #social-sheet { 
+            position: absolute; 
+            bottom: -100%; 
+            left: 0; 
+            width: 100%; 
+            background: var(--base-glow); 
+            backdrop-filter: blur(40px); 
+            -webkit-backdrop-filter: blur(40px); 
+            border-top: 1px solid var(--gold); 
+            border-radius: 35px 35px 0 0; 
+            padding: 30px 20px; 
+            z-index: 100; 
+            transition: bottom 0.5s cubic-bezier(0.19, 1, 0.22, 1); 
+            box-shadow: 0 -20px 50px rgba(0,0,0,0.5);
+        }
+        #social-sheet.active { bottom: 0; }
+        .sheet-handle { width: 40px; height: 4px; background: var(--gold); opacity: 0.3; border-radius: 2px; margin: -15px auto 20px; }
+        .sheet-title { color: var(--gold); font-size: 12px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; font-weight: 700; }
+        .close-sheet { position: absolute; top: 20px; right: 20px; color: var(--gold); cursor: pointer; opacity: 0.7; }
+        .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .footer { margin-top: 15px; font-size: 9px; color: var(--olive); letter-spacing: 2px; }
+        .spinner { display: none; width: 14px; height: 14px; border: 2px solid rgba(0,0,0,0.1); border-top: 2px solid #000; border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div id="bg-canvas"><\/div>
+    <div class="card">
+        ${config.visibility.socialBtn ? `
+        <div id="social-sheet">
+            <div class="sheet-handle"><\/div>
+            <div class="close-sheet" onclick="toggleSocials()"><i data-lucide="x"><\/i><\/div>
+            <div class="sheet-title">Connect With Us<\/div>
+            <div class="actions">
+                <button onclick="handleNav('${config.links.facebook}')" class="btn btn-outline"><i data-lucide="facebook"><\/i> Facebook<\/button>
+                <button onclick="handleNav('${config.links.instagram}')" class="btn btn-outline"><i data-lucide="instagram"><\/i> Instagram<\/button>
+                <button onclick="handleNav('${config.links.tiktok}')" class="btn btn-outline">TikTok<\/button>
+            <\/div>
+        <\/div>` : ''}
+        <div class="logo-container">
+            <img src="${config.images.logo}" class="main-logo">
+            ${config.visibility.tagline ? `<div class="tagline">${config.tagline}<\/div>` : ''}
+        <\/div>
+        ${config.visibility.profilePhoto ? `
+        <div class="coin-wrapper">
+            <div class="profile-media-container">
+                <div class="face face-front"><img src="${config.images.profilePhoto}" class="profile-image"><\/div>
+                <div class="face face-back"><\/div>
+            <\/div>
+        <\/div>` : ''}
+        <div class="user-name">${config.name}<\/div>
+        ${config.visibility.stars ? `<div class="stars-container"><span class="star">★<\/span><span class="star">★<\/span><span class="star">★<\/span><span class="star">★<\/span><span class="star">★<\/span><\/div>` : ''}
+        ${config.visibility.review ? `<div class="review-text">"${config.review}"<\/div>` : ''}
+        <div class="actions">
+            ${config.visibility.quoteBtn ? `<button onclick="handleNav('${config.links.baseUrl}?page=quote')" class="btn btn-primary"><i data-lucide="file-text"><\/i> ${config.buttonLabels.quote}<\/button>` : ''}
+            ${config.visibility.saveBtn ? `<button onclick="generateVCard()" class="btn btn-save" id="saveBtn"><i data-lucide="user-plus" id="saveIcon"><\/i><div class="spinner" id="saveSpinner"><\/div>${config.buttonLabels.save}<\/button>` : ''}
+            ${(config.visibility.callBtn || config.visibility.smsBtn) ? `
+            <div class="contact-grid">
+                ${config.visibility.callBtn ? `<button onclick="handleNav('tel:${config.links.phone}')" class="btn btn-outline"><i data-lucide="phone"><\/i> ${config.buttonLabels.call}<\/button>` : ''}
+                ${config.visibility.smsBtn ? `<button onclick="handleNav('sms:${config.links.phone}')" class="btn btn-outline"><i data-lucide="message-square"><\/i> ${config.buttonLabels.sms}<\/button>` : ''}
+            <\/div>` : ''}
+            ${config.visibility.socialBtn ? `<button onclick="toggleSocials()" class="btn btn-outline"><i data-lucide="share-2"><\/i> ${config.buttonLabels.socials}<\/button>` : ''}
+            ${config.visibility.emailBtn ? `<button onclick="sendEmail()" class="btn btn-outline"><i data-lucide="mail"><\/i> ${config.buttonLabels.email}<\/button>` : ''}
+        <\/div>
+        ${config.visibility.footer ? `<div class="footer">${config.footer}<\/div>` : ''}
+    <\/div>
+    <script>
+        lucide.createIcons();
+        function handleNav(url) { if (url.includes('script.google.com')) { window.top.location.href = url; } else { window.open(url, '_blank'); } }
+        ${config.visibility.socialBtn ? `function toggleSocials() { document.getElementById('social-sheet').classList.toggle('active'); }` : ''}
+        function createParticles() {
+            const mode = "${config.bgEffect}"; if (mode === 'none') return;
+            const container = document.getElementById('bg-canvas'); 
+            const existing = container.querySelectorAll('.particle');
+            existing.forEach(e => e.remove());
+            for (let i = 0; i < 30; i++) {
+                const p = document.createElement('div'); p.className = 'particle';
+                const size = Math.random() * 2 + 1; p.style.width = p.style.height = size + 'px';
+                p.style.left = Math.random() * 100 + '%'; p.style.top = Math.random() * 100 + '%';
+                p.style.animation = (mode === 'dust' ? 'floatDust' : 'rainGlitter') + ' ' + (Math.random() * 5 + 5) + 's linear infinite';
+                container.appendChild(p);
+            }
+        }
+        window.onload = createParticles;
+        ${config.visibility.emailBtn ? `function sendEmail() { handleNav(\`mailto:${config.links.email}?subject=Booking Enquiry\`); }` : ''}
+        ${config.visibility.saveBtn ? `async function generateVCard() {
+            const btn = document.getElementById('saveBtn'); const icon = document.getElementById('saveIcon'); const spin = document.getElementById('saveSpinner');
+            btn.style.opacity = "0.7"; icon.style.display = "none"; spin.style.display = "block";
+            const vCard = ["BEGIN:VCARD", "VERSION:3.0", "FN:${config.name}", "TEL:${config.links.phone}", "EMAIL:${config.links.email}", "END:VCARD"].join("\\r\\n");
+            const blob = new Blob([vCard], {type: 'text/vcard'}); const url = URL.createObjectURL(blob);
+            const link = document.createElement('a'); link.href = url; link.download = "${config.name}.vcf"; link.click();
+            setTimeout(() => { btn.style.opacity = "1"; icon.style.display = "block"; spin.style.display = "none"; }, 1000);
+        }` : ''}
+    <\/script>
+</body>
+</html>`;
+    }, [config]);
+
+    const copyToClipboard = () => {
+        const textArea = document.createElement('textarea');
+        textArea.value = generatedHtml;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        setCopySuccess(true);
+        setTimeout(() => setCopySuccess(false), 2000);
+    };
+
+    return (
+        <div className="flex h-screen bg-neutral-900 overflow-hidden">
+            <aside 
+                className={`bg-neutral-950 border-r border-neutral-800 flex flex-col h-full transition-all duration-300 ease-in-out z-30 ${
+                    showConfig ? 'w-full lg:w-96 translate-x-0' : 'w-0 -translate-x-full lg:translate-x-0 lg:w-0 overflow-hidden'
+                }`}
+            >
+                <div className="p-6 border-b border-neutral-800 flex justify-between items-center bg-neutral-950">
+                    <button 
+                        onClick={() => setShowConfig(false)}
+                        className="text-xl font-bold flex items-center gap-2 text-amber-500 hover:text-amber-400"
+                    >
+                        <Layout className="w-5 h-5" /> DCB Builder
+                    </button>
+                    <button 
+                        onClick={copyToClipboard}
+                        className="flex items-center gap-2 px-4 py-2 bg-amber-500 hover:bg-amber-400 text-black rounded-lg text-sm font-bold shadow-lg"
+                    >
+                        {copySuccess ? <Check size={16} /> : <Copy size={16} />}
+                        {copySuccess ? 'Copied' : 'Get HTML'}
+                    </button>
+                </div>
+
+                <nav className="flex bg-neutral-950/50">
+                    {[
+                        { id: 'content', icon: <Type size={16} />, label: 'Text' },
+                        { id: 'vis', icon: <Eye size={16} />, label: 'Vis' },
+                        { id: 'buttons', icon: <MousePointer2 size={16} />, label: 'Buttons' },
+                        { id: 'style', icon: <Palette size={16} />, label: 'Style' },
+                        { id: 'fx', icon: <Sparkles size={16} />, label: 'Effects' },
+                        { id: 'media', icon: <ImageIcon size={16} />, label: 'Media' },
+                        { id: 'links', icon: <Share2 size={16} />, label: 'Links' }
+                    ].map(tab => (
+                        <button
+                            key={tab.id}
+                            onClick={() => setActiveTab(tab.id)}
+                            className={`flex-1 py-4 text-[9px] uppercase tracking-widest font-bold border-b-2 transition-all ${
+                                activeTab === tab.id ? 'border-amber-500 text-amber-500 bg-neutral-900/50' : 'border-transparent text-neutral-500'
+                            }`}
+                        >
+                            <div className="flex flex-col items-center">
+                                {tab.icon}
+                                <span className="mt-1">{tab.label}</span>
+                            </div>
+                        </button>
+                    ))}
+                </nav>
+
+                <div className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar">
+                    {activeTab === 'content' && (
+                        <div className="space-y-4">
+                            <Input label="Name" value={config.name} onChange={v => handleTopLevelChange('name', v)} />
+                            <Input label="Tagline" value={config.tagline} onChange={v => handleTopLevelChange('tagline', v)} />
+                            <Input label="Review Quote" value={config.review} onChange={v => handleTopLevelChange('review', v)} />
+                            <Input label="Footer" value={config.footer} onChange={v => handleTopLevelChange('footer', v)} />
+                        </div>
+                    )}
+
+                    {activeTab === 'vis' && (
+                        <div className="space-y-2">
+                            <Toggle label="Profile Photo" desc="Toggle 3D Coin Profile" checked={config.visibility.profilePhoto} onChange={v => handleInputChange('visibility', 'profilePhoto', v)} />
+                            <Toggle label="Tagline" checked={config.visibility.tagline} onChange={v => handleInputChange('visibility', 'tagline', v)} />
+                            <Toggle label="Star Ratings" checked={config.visibility.stars} onChange={v => handleInputChange('visibility', 'stars', v)} />
+                            <Toggle label="Review Text" checked={config.visibility.review} onChange={v => handleInputChange('visibility', 'review', v)} />
+                            <div className="h-4"></div>
+                            <Toggle label="Request Quote Button" checked={config.visibility.quoteBtn} onChange={v => handleInputChange('visibility', 'quoteBtn', v)} />
+                            <Toggle label="Save Contact Button" checked={config.visibility.saveBtn} onChange={v => handleInputChange('visibility', 'saveBtn', v)} />
+                            <Toggle label="Call Button" checked={config.visibility.callBtn} onChange={v => handleInputChange('visibility', 'callBtn', v)} />
+                            <Toggle label="SMS Button" checked={config.visibility.smsBtn} onChange={v => handleInputChange('visibility', 'smsBtn', v)} />
+                            <Toggle label="Socials Button" checked={config.visibility.socialBtn} onChange={v => handleInputChange('visibility', 'socialBtn', v)} />
+                            <Toggle label="Email Button" checked={config.visibility.emailBtn} onChange={v => handleInputChange('visibility', 'emailBtn', v)} />
+                            <div className="h-4"></div>
+                            <Toggle label="Footer Text" checked={config.visibility.footer} onChange={v => handleInputChange('visibility', 'footer', v)} />
+                        </div>
+                    )}
+
+                    {activeTab === 'buttons' && (
+                        <div className="space-y-4">
+                            <Input label="Quote Button Name" value={config.buttonLabels.quote} onChange={v => handleInputChange('buttonLabels', 'quote', v)} />
+                            <Input label="Save Button Name" value={config.buttonLabels.save} onChange={v => handleInputChange('buttonLabels', 'save', v)} />
+                            <div className="grid grid-cols-2 gap-4">
+                                <Input label="Call Button" value={config.buttonLabels.call} onChange={v => handleInputChange('buttonLabels', 'call', v)} />
+                                <Input label="SMS Button" value={config.buttonLabels.sms} onChange={v => handleInputChange('buttonLabels', 'sms', v)} />
+                            </div>
+                            <Input label="Socials Button Name" value={config.buttonLabels.socials} onChange={v => handleInputChange('buttonLabels', 'socials', v)} />
+                            <Input label="Email Button Name" value={config.buttonLabels.email} onChange={v => handleInputChange('buttonLabels', 'email', v)} />
+                        </div>
+                    )}
+
+                    {activeTab === 'style' && (
+                        <div className="space-y-6">
+                            <div className="grid grid-cols-2 gap-4">
+                                <Color label="Outer BG" value={config.colors.bgDark} onChange={v => handleInputChange('colors', 'bgDark', v)} />
+                                <Color label="Base Glow" value={config.colors.baseGlow} onChange={v => handleInputChange('colors', 'baseGlow', v)} />
+                                <Color label="Gold Accent" value={config.colors.gold} onChange={v => handleInputChange('colors', 'gold', v)} />
+                                <Color label="Text White" value={config.colors.white} onChange={v => handleInputChange('colors', 'white', v)} />
+                                <Color label="Muted Text" value={config.colors.olive} onChange={v => handleInputChange('colors', 'olive', v)} />
+                            </div>
+                        </div>
+                    )}
+
+                    {activeTab === 'fx' && (
+                        <div className="space-y-6">
+                            <Toggle label="Spinning Profile" desc="Toggle 3D coin rotation" checked={config.enableRotation} onChange={v => handleTopLevelChange('enableRotation', v)} />
+                            <Toggle label="Light Sweep Effect" desc="Shimmer line crossing the card" checked={config.enableSweep} onChange={v => handleTopLevelChange('enableSweep', v)} />
+                            {config.enableSweep && (
+                                <div className="space-y-2">
+                                    <label className="text-[10px] text-neutral-500 font-bold uppercase tracking-widest ml-1">Sweep Direction</label>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        {['left', 'right', 'up', 'down'].map(dir => (
+                                            <button key={dir} onClick={() => handleTopLevelChange('sweepDirection', dir)} className={`py-2 px-3 text-[10px] font-bold rounded-lg border transition-all uppercase ${config.sweepDirection === dir ? 'bg-amber-500 text-black border-amber-500' : 'bg-neutral-900 text-neutral-400 border-neutral-800'}`}>
+                                                {dir}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                            <div className="space-y-2">
+                                <label className="text-[10px] text-neutral-500 font-bold uppercase tracking-widest ml-1">Card Entrance</label>
+                                <select value={config.entranceAnim} onChange={(e) => handleTopLevelChange('entranceAnim', e.target.value)} className="w-full bg-neutral-900 border border-neutral-800 rounded-xl px-4 py-3 text-sm text-neutral-100">
+                                    <option value="slideUp">Slide Up</option>
+                                    <option value="zoomIn">Zoom In</option>
+                                    <option value="fade">Soft Fade</option>
+                                </select>
+                            </div>
+                        </div>
+                    )}
+
+                    {activeTab === 'media' && (
+                        <div className="space-y-4">
+                            <Input label="Logo URL" value={config.images.logo} onChange={v => handleInputChange('images', 'logo', v)} />
+                            <Input label="Profile Photo" value={config.images.profilePhoto} onChange={v => handleInputChange('images', 'profilePhoto', v)} />
+                            <Input label="Coin Back Image" value={config.images.coinBack} onChange={v => handleInputChange('images', 'coinBack', v)} />
+                        </div>
+                    )}
+
+                    {activeTab === 'links' && (
+                        <div className="space-y-4">
+                            <Input label="App Script URL" value={config.links.baseUrl} onChange={v => handleInputChange('links', 'baseUrl', v)} />
+                            <Input label="Website" value={config.links.website} onChange={v => handleInputChange('links', 'website', v)} />
+                            <Input label="Phone" value={config.links.phone} onChange={v => handleInputChange('links', 'phone', v)} />
+                            <Input label="Email" value={config.links.email} onChange={v => handleInputChange('links', 'email', v)} />
+                            <Input label="Facebook" value={config.links.facebook} onChange={v => handleInputChange('links', 'facebook', v)} />
+                            <Input label="Instagram" value={config.links.instagram} onChange={v => handleInputChange('links', 'instagram', v)} />
+                            <Input label="TikTok" value={config.links.tiktok} onChange={v => handleInputChange('links', 'tiktok', v)} />
+                        </div>
+                    )}
+                </div>
+            </aside>
+
+            <main className="flex-1 flex flex-col items-center justify-center relative bg-neutral-900 overflow-hidden">
+                {!showConfig && (
+                    <button 
+                        onClick={() => setShowConfig(true)}
+                        className="absolute left-0 top-1/2 -translate-y-1/2 bg-amber-500 text-black p-3 rounded-r-2xl shadow-2xl hover:pr-5 transition-all group z-40"
+                    >
+                        <PanelLeft size={20} />
+                    </button>
+                )}
+
+                <div className="absolute top-6 left-1/2 -translate-x-1/2 flex items-center gap-2 text-neutral-600 text-[10px] font-bold uppercase tracking-[0.3em] bg-neutral-950/50 px-4 py-2 rounded-full border border-white/5 backdrop-blur-sm">
+                    <Sparkles size={12} className="text-amber-500 animate-pulse" /> Live Rendering
+                </div>
+
+                <div className={`transition-all duration-700 ease-in-out transform ${showConfig ? 'scale-[0.8] lg:scale-[0.85]' : 'scale-100 lg:scale-105'}`}>
+                    <div className="w-[375px] h-[750px] bg-black rounded-[55px] shadow-[0_60px_120px_-20px_rgba(0,0,0,0.9)] border-[12px] border-neutral-950 overflow-hidden relative ring-1 ring-white/10">
+                        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-36 h-7 bg-neutral-950 rounded-b-[18px] z-50"></div>
+                        
+                        <iframe 
+                            key={JSON.stringify(config)} 
+                            title="Preview"
+                            srcDoc={generatedHtml}
+                            className="w-full h-full border-none pointer-events-auto"
+                        />
+                    </div>
+                </div>
+                
+                <div className="absolute bottom-6 text-neutral-600 text-[10px] uppercase tracking-widest font-medium opacity-50">
+                    Interactive Mobile Preview
+                </div>
+            </main>
+
+            <style>{`
+                .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+                .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+                .custom-scrollbar::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+                .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #444; }
+            `}</style>
+        </div>
+    );
+};
+
+const Toggle = ({ label, desc, checked, onChange }) => (
+    <div className="flex items-center justify-between p-4 bg-neutral-900 border border-neutral-800 rounded-xl">
+        <div className="flex flex-col pr-4">
+            <span className="text-xs font-bold text-neutral-100">{label}</span>
+            {desc && <span className="text-[10px] text-neutral-500 leading-tight mt-0.5">{desc}</span>}
+        </div>
+        <label className="relative inline-flex items-center cursor-pointer shrink-0">
+            <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} className="sr-only peer" />
+            <div className="w-11 h-6 bg-neutral-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-500"></div>
+        </label>
+    </div>
+);
+
+const Input = ({ label, value, onChange }) => (
+    <div className="space-y-1.5">
+        <label className="text-[10px] text-neutral-500 font-bold uppercase tracking-widest ml-1">{label}</label>
+        <input 
+            type="text" 
+            value={value} 
+            onChange={(e) => onChange(e.target.value)}
+            className="w-full bg-neutral-900 border border-neutral-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-amber-500 transition-all text-neutral-100"
+            placeholder={`Enter ${label}...`}
+        />
+    </div>
+);
+
+const Color = ({ label, value, onChange }) => (
+    <div className="space-y-1.5">
+        <label className="text-[10px] text-neutral-500 font-bold uppercase tracking-widest ml-1">{label}</label>
+        <div className="flex items-center gap-3 bg-neutral-900 border border-neutral-800 rounded-xl p-2.5">
+            <input 
+                type="color" 
+                value={value} 
+                onChange={(e) => onChange(e.target.value)}
+                className="w-7 h-7 rounded-lg bg-transparent border-none cursor-pointer"
+            />
+            <span className="text-[11px] font-mono text-neutral-400 uppercase tracking-tight">{value}</span>
+        </div>
+    </div>
+);
+
+export default App;
