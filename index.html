@@ -1,129 +1,746 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { 
-  Type, 
-  Eye, 
-  Palette, 
-  Sparkles, 
-  Image as ImageIcon, 
-  Share2, 
-  Copy, 
-  Check, 
-  UserPlus, 
-  X, 
-  PanelLeft, 
-  Star,
-  Zap,
-  Move,
-  Mail,
-  Phone,
-  MessageSquare,
-  Globe,
-  Facebook,
-  Instagram
-} from 'lucide-react';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Card Builder</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
-const App = () => {
-    const [activeTab, setActiveTab] = useState('content');
-    const [copySuccess, setCopySuccess] = useState(false);
-    const [showConfig, setShowConfig] = useState(true);
-    
-    const [config, setConfig] = useState({
-        name: "Gabriel Knight",
-        tagline: "Luxury Photo Booths",
-        review: "Melbourne's bespoke experience.",
-        footer: "Melbourne • Victoria • Australia",
-        profileAnimMode: 'spin', 
-        spinPauseBack: 2, 
-        spinPauseFront: 3, 
-        floatSpeed: 3,
-        enableTilt: true, 
-        glowStrength: 40, 
-        enableSweep: true,
-        sweepDirection: 'right', 
-        entranceAnim: 'slideUp', 
-        bgEffect: 'bokeh', 
-        colors: {
-            bgDark: "#080b0a",
-            gold: "#dac386",
-            white: "#ffffff",
-            olive: "#847c57",
-            baseGlow: "#1d2523"
-        },
-        buttonLabels: {
-            quote: "Request Quote",
-            save: "Save Contact",
-            call: "Call",
-            sms: "SMS",
-            socials: "Our Socials",
-            email: "Email Us"
-        },
-        buttonIcons: {
-            quote: "file-text",
-            save: "user-plus",
-            call: "phone",
-            sms: "message-square",
-            socials: "share-2",
-            email: "mail"
-        },
-        images: {
-            logo: "https://raw.githubusercontent.com/theknightlyphotobooth/Images-/194d47a8ad24d9fef8e9d6f9c3a28f9fad5fc1e5/the%20knightly%20logo.png",
-            profilePhoto: "https://raw.githubusercontent.com/theknightlyphotobooth/Images-/3187354caa0a71d12c7dd353c29e0f0cc30e53eb/Gabriel%20Knight.png",
-            coinBack: "https://raw.githubusercontent.com/theknightlyphotobooth/Images-/01668a04aceed0bceecc35b363e5115693d4dd63/Back.jpg"
-        },
-        links: {
-            baseUrl: "https://script.google.com/macros/s/AKfycbw5XcIU0Y1xN47xpKtw0YrIoO9PrQ-C339i1TBean9LFZpu-ZG5egsEW468FdUhFRAm/exec",
-            phone: "+61422730144",
-            email: "hello@knightlyphotobooth.com.au",
-            website: "https://knightlyphotobooth.com.au",
-            facebook: "https://www.facebook.com/theknightlyphotobooth/",
-            instagram: "https://www.instagram.com/theknightlyphotobooth/",
-            tiktok: "https://www.tiktok.com/@theknightlyphotobooth"
-        },
-        visibility: {
-            tagline: true,
-            stars: true,
-            review: true,
-            quoteBtn: true,
-            saveBtn: true,
-            callBtn: true,
-            smsBtn: true,
-            socialBtn: true,
-            emailBtn: true,
-            footer: true,
-            profilePhoto: true
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg-dark: #080b0a;
+            --gold: #dac386;
+            --white: #ffffff;
+            --olive: #847c57;
+            --base-glow: #1d2523;
         }
-    });
 
-    const handleInputChange = (section, key, value) => {
-        setConfig(prev => ({
-            ...prev,
-            [section]: { ...prev[section], [key]: value }
-        }));
-    };
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: #0a0a0a;
+            color: #fff;
+            overflow: hidden;
+        }
 
-    const handleTopLevelChange = (key, value) => {
-        setConfig(prev => ({ ...prev, [key]: value }));
-    };
+        .app {
+            display: flex;
+            height: 100vh;
+        }
 
-    const generatedHtml = useMemo(() => {
-        const totalDuration = 12;
-        const flipTime = 1.2; 
-        const frontPausePct = (config.spinPauseFront / totalDuration) * 100;
-        const backPausePct = (config.spinPauseBack / totalDuration) * 100;
-        const flipPct = (flipTime / totalDuration) * 100;
+        /* Sidebar */
+        .sidebar {
+            width: 380px;
+            background: #0a0a0a;
+            border-right: 1px solid #262626;
+            display: flex;
+            flex-direction: column;
+            transition: width 0.3s ease;
+        }
 
-        const k1 = frontPausePct;
-        const k2 = k1 + flipPct;
-        const k3 = k2 + backPausePct;
-        const k4 = k3 + flipPct;
+        .sidebar.collapsed {
+            width: 0;
+            overflow: hidden;
+        }
 
-        return `<!DOCTYPE html>
+        .header {
+            padding: 20px;
+            border-bottom: 1px solid #262626;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #0a0a0a;
+        }
+
+        .logo {
+            font-size: 18px;
+            font-weight: 800;
+            color: #f59e0b;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo svg {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+
+        .copy-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            background: #f59e0b;
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: #fbbf24;
+        }
+
+        .copy-btn:active {
+            transform: scale(0.95);
+        }
+
+        .copy-btn.copied {
+            background: #22c55e;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            background: #0a0a0a;
+            border-bottom: 1px solid #262626;
+            overflow-x: auto;
+        }
+
+        .tab {
+            flex: 1;
+            min-width: 70px;
+            padding: 16px 8px;
+            background: none;
+            border: none;
+            border-bottom: 2px solid transparent;
+            color: #737373;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .tab svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .tab.active {
+            color: #f59e0b;
+            border-bottom-color: #f59e0b;
+            background: rgba(245, 158, 11, 0.05);
+        }
+
+        /* Panel Content */
+        .panel {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+        }
+
+        .panel-section {
+            display: none;
+        }
+
+        .panel-section.active {
+            display: block;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-label {
+            display: block;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #737373;
+            margin-bottom: 8px;
+        }
+
+        .text-input {
+            width: 100%;
+            padding: 12px 16px;
+            background: #171717;
+            border: 1px solid #262626;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 13px;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+
+        .text-input:focus {
+            outline: none;
+            border-color: #404040;
+        }
+
+        .slider-container {
+            background: #171717;
+            border: 1px solid #262626;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .slider-label {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #737373;
+        }
+
+        .slider-value {
+            font-size: 10px;
+            font-weight: 700;
+            color: #f59e0b;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 4px;
+            background: #262626;
+            border-radius: 2px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #f59e0b;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .toggle-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .toggle-info h4 {
+            font-size: 12px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 2px;
+        }
+
+        .toggle-info p {
+            font-size: 10px;
+            color: #737373;
+            text-transform: uppercase;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 44px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #262626;
+            border-radius: 24px;
+            transition: 0.3s;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background: #737373;
+            border-radius: 50%;
+            transition: 0.3s;
+        }
+
+        input:checked + .toggle-slider {
+            background: #f59e0b;
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(20px);
+            background: #000;
+        }
+
+        .color-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .color-input {
+            background: #171717;
+            border: 1px solid #262626;
+            border-radius: 12px;
+            padding: 12px;
+        }
+
+        .color-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        input[type="color"] {
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            background: none;
+        }
+
+        .color-hex {
+            font-size: 11px;
+            font-family: monospace;
+            color: #a3a3a3;
+            text-transform: uppercase;
+        }
+
+        .select-input {
+            width: 100%;
+            padding: 12px 16px;
+            background: #171717;
+            border: 1px solid #262626;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 12px;
+            font-family: inherit;
+            cursor: pointer;
+        }
+
+        .visibility-grid {
+            display: grid;
+            gap: 12px;
+        }
+
+        /* Preview Area */
+        .preview-area {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #0a0a0a;
+            position: relative;
+        }
+
+        .expand-btn {
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #f59e0b;
+            color: #000;
+            border: none;
+            padding: 12px;
+            border-radius: 0 12px 12px 0;
+            cursor: pointer;
+            z-index: 10;
+            display: none;
+        }
+
+        .expand-btn.visible {
+            display: block;
+        }
+
+        .phone-frame {
+            width: 375px;
+            height: 780px;
+            background: #000;
+            border-radius: 50px;
+            border: 12px solid #171717;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.8);
+            transition: transform 0.5s ease;
+        }
+
+        .phone-frame.expanded {
+            transform: scale(1);
+        }
+
+        .phone-frame:not(.expanded) {
+            transform: scale(0.85);
+        }
+
+        #preview-frame {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: #22c55e;
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+<base target="_blank">
+</head>
+<body>
+    <div class="app">
+        <!-- Sidebar Controls -->
+        <aside class="sidebar" id="sidebar">
+            <div class="header">
+                <div class="logo">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                    Builder
+                </div>
+                <button class="copy-btn" id="copyBtn" onclick="copyHTML()">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                    Get HTML
+                </button>
+            </div>
+
+            <nav class="tabs">
+                <button class="tab active" data-tab="content">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"></polyline><line x1="9" y1="20" x2="15" y2="20"></line><line x1="12" y1="4" x2="12" y2="20"></line></svg>
+                    Text
+                </button>
+                <button class="tab" data-tab="motion">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 9 2 12 5 15"></polyline><polyline points="9 5 12 2 15 5"></polyline><polyline points="15 19 12 22 9 19"></polyline><polyline points="19 15 22 12 19 9"></polyline><line x1="2" y1="12" x2="22" y2="12"></line><line x1="12" y1="2" x2="12" y2="22"></line></svg>
+                    Motion
+                </button>
+                <button class="tab" data-tab="fx">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg>
+                    Effects
+                </button>
+                <button class="tab" data-tab="style">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5"></circle><circle cx="17.5" cy="10.5" r=".5"></circle><circle cx="8.5" cy="7.5" r=".5"></circle><circle cx="6.5" cy="12.5" r=".5"></circle><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.01 17.461 2 12 2z"></path></svg>
+                    Theme
+                </button>
+                <button class="tab" data-tab="media">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                    Media
+                </button>
+                <button class="tab" data-tab="vis">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                    Vis
+                </button>
+            </nav>
+
+            <div class="panel">
+                <!-- Content Tab -->
+                <div class="panel-section active" id="panel-content">
+                    <div class="input-group">
+                        <label class="input-label">Display Name</label>
+                        <input type="text" class="text-input" id="input-name" value="Gabriel Knight" oninput="updateConfig()">
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Luxury Tagline</label>
+                        <input type="text" class="text-input" id="input-tagline" value="Luxury Photo Booths" oninput="updateConfig()">
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Client Review</label>
+                        <input type="text" class="text-input" id="input-review" value="Melbourne's bespoke experience." oninput="updateConfig()">
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Footer Location</label>
+                        <input type="text" class="text-input" id="input-footer" value="Melbourne • Victoria • Australia" oninput="updateConfig()">
+                    </div>
+                </div>
+
+                <!-- Motion Tab -->
+                <div class="panel-section" id="panel-motion">
+                    <div class="slider-container">
+                        <div class="slider-header">
+                            <span class="slider-label">Pause Front (s)</span>
+                            <span class="slider-value" id="val-front">3s</span>
+                        </div>
+                        <input type="range" min="0" max="10" step="0.5" value="3" id="slider-front" oninput="updateConfig()">
+                    </div>
+                    <div class="slider-container">
+                        <div class="slider-header">
+                            <span class="slider-label">Pause Back (s)</span>
+                            <span class="slider-value" id="val-back">2s</span>
+                        </div>
+                        <input type="range" min="0" max="10" step="0.5" value="2" id="slider-back" oninput="updateConfig()">
+                    </div>
+                    <div class="toggle-row">
+                        <div class="toggle-info">
+                            <h4>3D Tilt</h4>
+                            <p>Interactive parallax</p>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="toggle-tilt" checked onchange="updateConfig()">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Effects Tab -->
+                <div class="panel-section" id="panel-fx">
+                    <div class="slider-container">
+                        <div class="slider-header">
+                            <span class="slider-label">Outer Glow</span>
+                            <span class="slider-value" id="val-glow">40px</span>
+                        </div>
+                        <input type="range" min="0" max="150" step="5" value="40" id="slider-glow" oninput="updateConfig()">
+                    </div>
+                    <div class="toggle-row">
+                        <div class="toggle-info">
+                            <h4>Light Sweep</h4>
+                            <p>Shimmer effect</p>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="toggle-sweep" checked onchange="updateConfig()">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Background Effect</label>
+                        <select class="select-input" id="select-bg" onchange="updateConfig()">
+                            <option value="bokeh">Luxury Bokeh</option>
+                            <option value="glitter">Golden Rain</option>
+                            <option value="none">None</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Style Tab -->
+                <div class="panel-section" id="panel-style">
+                    <div class="color-grid">
+                        <div class="color-input">
+                            <label class="input-label">BG Color</label>
+                            <div class="color-row">
+                                <input type="color" id="color-bg" value="#080b0a" oninput="updateConfig()">
+                                <span class="color-hex" id="hex-bg">#080b0a</span>
+                            </div>
+                        </div>
+                        <div class="color-input">
+                            <label class="input-label">Accent Gold</label>
+                            <div class="color-row">
+                                <input type="color" id="color-gold" value="#dac386" oninput="updateConfig()">
+                                <span class="color-hex" id="hex-gold">#dac386</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Media Tab -->
+                <div class="panel-section" id="panel-media">
+                    <div class="input-group">
+                        <label class="input-label">Logo URL</label>
+                        <input type="text" class="text-input" id="input-logo" value="https://raw.githubusercontent.com/theknightlyphotobooth/Images-/194d47a8ad24d9fef8e9d6f9c3a28f9fad5fc1e5/the%20knightly%20logo.png" oninput="updateConfig()">
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Profile Photo URL</label>
+                        <input type="text" class="text-input" id="input-profile" value="https://raw.githubusercontent.com/theknightlyphotobooth/Images-/3187354caa0a71d12c7dd353c29e0f0cc30e53eb/Gabriel%20Knight.png" oninput="updateConfig()">
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Coin Back URL</label>
+                        <input type="text" class="text-input" id="input-coin" value="https://raw.githubusercontent.com/theknightlyphotobooth/Images-/01668a04aceed0bceecc35b363e5115693d4dd63/Back.jpg" oninput="updateConfig()">
+                    </div>
+                </div>
+
+                <!-- Visibility Tab -->
+                <div class="panel-section" id="panel-vis">
+                    <div class="visibility-grid">
+                        <div class="toggle-row">
+                            <div class="toggle-info"><h4>Tagline</h4></div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="vis-tagline" checked onchange="updateConfig()">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-row">
+                            <div class="toggle-info"><h4>Stars</h4></div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="vis-stars" checked onchange="updateConfig()">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-row">
+                            <div class="toggle-info"><h4>Review</h4></div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="vis-review" checked onchange="updateConfig()">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-row">
+                            <div class="toggle-info"><h4>Quote Button</h4></div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="vis-quote" checked onchange="updateConfig()">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-row">
+                            <div class="toggle-info"><h4>Save Button</h4></div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="vis-save" checked onchange="updateConfig()">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-row">
+                            <div class="toggle-info"><h4>Call Button</h4></div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="vis-call" checked onchange="updateConfig()">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-row">
+                            <div class="toggle-info"><h4>SMS Button</h4></div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="vis-sms" checked onchange="updateConfig()">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-row">
+                            <div class="toggle-info"><h4>Social Button</h4></div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="vis-social" checked onchange="updateConfig()">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-row">
+                            <div class="toggle-info"><h4>Footer</h4></div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="vis-footer" checked onchange="updateConfig()">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-row">
+                            <div class="toggle-info"><h4>Profile Photo</h4></div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="vis-profile" checked onchange="updateConfig()">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Preview Area -->
+        <main class="preview-area">
+            <button class="expand-btn visible" id="expandBtn" onclick="toggleSidebar()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
+            </button>
+
+            <div class="phone-frame" id="phoneFrame">
+                <iframe id="preview-frame"></iframe>
+            </div>
+        </main>
+    </div>
+
+    <div class="toast" id="toast">Copied to clipboard!</div>
+
+    <script>
+        // Tab switching
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.panel-section').forEach(p => p.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById('panel-' + tab.dataset.tab).classList.add('active');
+            });
+        });
+
+        // Toggle sidebar
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('collapsed');
+            document.getElementById('phoneFrame').classList.toggle('expanded');
+            document.getElementById('expandBtn').classList.toggle('visible');
+        }
+
+        // Generate card HTML
+        function generateCardHTML() {
+            const config = {
+                name: document.getElementById('input-name').value,
+                tagline: document.getElementById('input-tagline').value,
+                review: document.getElementById('input-review').value,
+                footer: document.getElementById('input-footer').value,
+                spinPauseFront: parseFloat(document.getElementById('slider-front').value),
+                spinPauseBack: parseFloat(document.getElementById('slider-back').value),
+                enableTilt: document.getElementById('toggle-tilt').checked,
+                glowStrength: document.getElementById('slider-glow').value,
+                enableSweep: document.getElementById('toggle-sweep').checked,
+                bgEffect: document.getElementById('select-bg').value,
+                colors: {
+                    bgDark: document.getElementById('color-bg').value,
+                    gold: document.getElementById('color-gold').value,
+                    white: "#ffffff",
+                    olive: "#847c57",
+                    baseGlow: "#1d2523"
+                },
+                images: {
+                    logo: document.getElementById('input-logo').value,
+                    profilePhoto: document.getElementById('input-profile').value,
+                    coinBack: document.getElementById('input-coin').value
+                },
+                visibility: {
+                    tagline: document.getElementById('vis-tagline').checked,
+                    stars: document.getElementById('vis-stars').checked,
+                    review: document.getElementById('vis-review').checked,
+                    quoteBtn: document.getElementById('vis-quote').checked,
+                    saveBtn: document.getElementById('vis-save').checked,
+                    callBtn: document.getElementById('vis-call').checked,
+                    smsBtn: document.getElementById('vis-sms').checked,
+                    socialBtn: document.getElementById('vis-social').checked,
+                    footer: document.getElementById('vis-footer').checked,
+                    profilePhoto: document.getElementById('vis-profile').checked
+                }
+            };
+
+            const totalDuration = 12;
+            const flipTime = 1.2;
+            const frontPausePct = (config.spinPauseFront / totalDuration) * 100;
+            const backPausePct = (config.spinPauseBack / totalDuration) * 100;
+            const flipPct = (flipTime / totalDuration) * 100;
+            const k1 = frontPausePct;
+            const k2 = k1 + flipPct;
+            const k3 = k2 + backPausePct;
+            const k4 = k3 + flipPct;
+
+            return `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>${config.name} | Premium Card</title>
-    <script src="https://unpkg.com/lucide@latest"><\/script>
     <style>
         :root { 
             --bg-dark: ${config.colors.bgDark}; 
@@ -134,7 +751,7 @@ const App = () => {
             --glow-str: ${config.glowStrength}px;
         }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
-        
+
         body, html { 
             background-color: var(--bg-dark); 
             color: var(--white); 
@@ -143,19 +760,21 @@ const App = () => {
             display: flex; align-items: center; justify-content: center; 
             overflow: hidden; perspective: 1200px; user-select: none;
         }
-        
+
         #bg-canvas { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; 
             background: radial-gradient(circle at 50% 50%, var(--base-glow) 0%, var(--bg-dark) 100%); 
         }
 
         .p { position: absolute; border-radius: 50%; pointer-events: none; opacity: 0; }
+
         @keyframes bokeh {
             0% { transform: translate(0, 0) scale(1); opacity: 0; }
             20% { opacity: 0.3; }
             80% { opacity: 0.3; }
             100% { transform: translate(var(--tx), var(--ty)) scale(1.5); opacity: 0; }
         }
+
         @keyframes goldRain {
             0% { transform: translateY(-10dvh) rotate(0deg); opacity: 0; }
             20% { opacity: 0.8; }
@@ -174,7 +793,7 @@ const App = () => {
             border-radius: 45px; border: 1px solid rgba(218, 195, 134, 0.2); 
             padding: 35px 24px; box-shadow: 0 0 var(--glow-str) rgba(218, 195, 134, 0.1), 0 40px 100px rgba(0,0,0,0.6); 
             text-align: center; position: relative; overflow: hidden; transform-style: preserve-3d;
-            animation: ${config.entranceAnim} 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+            animation: slideUp 1.2s cubic-bezier(0.22, 1, 0.36, 1);
         }
 
         @keyframes slideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
@@ -199,7 +818,7 @@ const App = () => {
         }
         .coin { 
             width: 100%; height: 100%; position: relative; transform-style: preserve-3d; 
-            ${config.profileAnimMode === 'spin' ? `animation: coinSpin ${totalDuration}s linear infinite;` : `animation: float ${config.floatSpeed}s ease-in-out infinite;`}
+            animation: coinSpin ${totalDuration}s linear infinite;
         }
         .face { 
             position: absolute; width: 100%; height: 100%; backface-visibility: hidden; 
@@ -208,21 +827,20 @@ const App = () => {
         }
         .front { transform: rotateY(0deg); }
         .back { transform: rotateY(180deg); background: url('${config.images.coinBack}') center/cover; }
-        
+
         @keyframes coinSpin {
             0%, ${k1}% { transform: rotateY(0deg); }
             ${k2}% { transform: rotateY(180deg); }
             ${k3}% { transform: rotateY(180deg); }
             ${k4}%, 100% { transform: rotateY(360deg); }
         }
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
 
         .user-title { font-size: 20px; font-weight: 800; transform: translateZ(50px); margin-bottom: 6px; letter-spacing: -0.5px; }
-        .stars { display: flex; justify-content: center; gap: 4px; margin-bottom: 12px; transform: translateZ(30px); }
+        .stars { display: flex; justify-content: center; gap: 4px; margin-bottom: 12px; transform: translateZ(30px); ${config.visibility.stars ? '' : 'display: none;'} }
         .star { color: var(--gold); font-size: 14px; animation: starPulse 2s infinite; }
         @keyframes starPulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.6; transform: scale(1.15); } }
 
-        .review { font-size: 12px; font-style: italic; opacity: 0.7; margin-bottom: 25px; transform: translateZ(25px); padding: 0 15px; line-height: 1.4; }
+        .review { font-size: 12px; font-style: italic; opacity: 0.7; margin-bottom: 25px; transform: translateZ(25px); padding: 0 15px; line-height: 1.4; ${config.visibility.review ? '' : 'display: none;'} }
 
         .btns { display: grid; gap: 12px; transform: translateZ(45px); width: 100%; }
         .btn { 
@@ -239,7 +857,7 @@ const App = () => {
         .btn-white { background: #fff; color: #000; }
         .btn-white:active { transform: scale(0.95); opacity: 0.9; }
 
-        .footer { margin-top: 25px; font-size: 9px; color: var(--olive); letter-spacing: 1.8px; transform: translateZ(15px); text-transform: uppercase; opacity: 0.8; }
+        .footer { margin-top: 25px; font-size: 9px; color: var(--olive); letter-spacing: 1.8px; transform: translateZ(15px); text-transform: uppercase; opacity: 0.8; ${config.visibility.footer ? '' : 'display: none;'} }
 
         #sheet { 
             position: absolute; bottom: -100%; left: 0; width: 100%; background: #0a0e0c; 
@@ -249,72 +867,120 @@ const App = () => {
         }
         #sheet.open { bottom: 0; }
         .sheet-close { position: absolute; top: 18px; right: 22px; color: var(--gold); cursor: pointer; padding: 10px; }
+
+        @media (max-height: 700px) {
+            .card { padding: 25px 20px; }
+            .coin-box { width: 90px; height: 90px; margin-bottom: 15px; }
+            .user-title { font-size: 18px; }
+            .review { margin-bottom: 18px; }
+            .btn { padding: 14px; }
+        }
     </style>
 </head>
 <body>
-    <div id="bg-canvas"><\/div>
+    <div id="bg-canvas"></div>
     <div class="tilt-container" id="tilt">
         <div class="card">
             <div id="sheet">
-                <div class="sheet-close" onclick="toggleS()"><i data-lucide="x"><\/i><\/div>
+                <div class="sheet-close" onclick="toggleS()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </div>
                 <div class="btns">
-                    <button onclick="nav('${config.links.facebook}')" class="btn btn-glass"><i data-lucide="facebook"><\/i> Facebook<\/button>
-                    <button onclick="nav('${config.links.instagram}')" class="btn btn-glass"><i data-lucide="instagram"><\/i> Instagram<\/button>
-                    <button onclick="nav('${config.links.tiktok}')" class="btn btn-glass">TikTok<\/button>
-                <\/div>
-            <\/div>
+                    <button onclick="nav('https://www.facebook.com/theknightlyphotobooth/')" class="btn btn-glass">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+                        Facebook
+                    </button>
+                    <button onclick="nav('https://www.instagram.com/theknightlyphotobooth/')" class="btn btn-glass">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                        Instagram
+                    </button>
+                    <button onclick="nav('https://www.tiktok.com/@theknightlyphotobooth')" class="btn btn-glass">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"></path></svg>
+                        TikTok
+                    </button>
+                </div>
+            </div>
 
             <div class="logo-wrap">
-                <img src="${config.images.logo}" class="main-logo">
-                ${config.visibility.tagline ? `<div class="tagline">${config.tagline}<\/div>` : ''}
-            <\/div>
+                <img src="${config.images.logo}" class="main-logo" alt="Logo">
+                ${config.visibility.tagline ? `<div class="tagline">${config.tagline}</div>` : ''}
+            </div>
 
             <div class="coin-box">
                 <div class="coin">
-                    <div class="face front"><img src="${config.images.profilePhoto}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;" alt="Profile"><\/div>
-                    <div class="face back"><\/div>
-                <\/div>
-            <\/div>
+                    <div class="face front">
+                        <img src="${config.images.profilePhoto}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;" alt="Profile">
+                    </div>
+                    <div class="face back"></div>
+                </div>
+            </div>
 
-            <div class="user-title">${config.name}<\/div>
-            ${config.visibility.stars ? `<div class="stars"><span class="star">★<\/span><span class="star">★<\/span><span class="star">★<\/span><span class="star">★<\/span><span class="star">★<\/span><\/div>` : ''}
-            ${config.visibility.review ? `<div class="review">"${config.review}"<\/div>` : ''}
+            <div class="user-title">${config.name}</div>
+
+            <div class="stars">
+                <span class="star">★</span>
+                <span class="star">★</span>
+                <span class="star">★</span>
+                <span class="star">★</span>
+                <span class="star">★</span>
+            </div>
+
+            ${config.visibility.review ? `<div class="review">"${config.review}"</div>` : ''}
 
             <div class="btns">
-                ${config.visibility.quoteBtn ? `<button onclick="nav('${config.links.baseUrl}?page=quote')" class="btn btn-gold"><i data-lucide="${config.buttonIcons.quote}"><\/i> ${config.buttonLabels.quote}<\/button>` : ''}
-                ${config.visibility.saveBtn ? `<button onclick="saveV()" class="btn btn-white"><i data-lucide="${config.buttonIcons.save}"><\/i> ${config.buttonLabels.save}<\/button>` : ''}
+                ${config.visibility.quoteBtn ? `<button onclick="nav('https://script.google.com/macros/s/AKfycbw5XcIU0Y1xN47xpKtw0YrIoO9PrQ-C339i1TBean9LFZpu-ZG5egsEW468FdUhFRAm/exec?page=quote')" class="btn btn-gold">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    Request Quote
+                </button>` : ''}
+
+                ${config.visibility.saveBtn ? `<button onclick="saveV()" class="btn btn-white">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg>
+                    Save Contact
+                </button>` : ''}
+
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; width:100%;">
-                    ${config.visibility.callBtn ? `<button onclick="nav('tel:${config.links.phone}')" class="btn btn-glass" aria-label="Call"><i data-lucide="${config.buttonIcons.call}"><\/i><\/button>` : ''}
-                    ${config.visibility.smsBtn ? `<button onclick="nav('sms:${config.links.phone}')" class="btn btn-glass" aria-label="SMS"><i data-lucide="${config.buttonIcons.sms}"><\/i><\/button>` : ''}
-                <\/div>
-                ${config.visibility.socialBtn ? `<button onclick="toggleS()" class="btn btn-glass"><i data-lucide="${config.buttonIcons.socials}"><\/i> ${config.buttonLabels.socials}<\/button>` : ''}
-            <\/div>
-            ${config.visibility.footer ? `<div class="footer">${config.footer}<\/div>` : ''}
-        <\/div>
-    <\/div>
+                    ${config.visibility.callBtn ? `<button onclick="nav('tel:+61422730144')" class="btn btn-glass" aria-label="Call">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                    </button>` : ''}
+                    ${config.visibility.smsBtn ? `<button onclick="nav('sms:+61422730144')" class="btn btn-glass" aria-label="SMS">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                    </button>` : ''}
+                </div>
+
+                ${config.visibility.socialBtn ? `<button onclick="toggleS()" class="btn btn-glass">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+                    Our Socials
+                </button>` : ''}
+            </div>
+
+            ${config.visibility.footer ? `<div class="footer">${config.footer}</div>` : ''}
+        </div>
+    </div>
 
     <script>
-        lucide.createIcons();
-        function nav(u) { if(u.includes('script.google.com')) window.top.location.href = u; else window.open(u, '_blank'); }
-        function toggleS() { document.getElementById('sheet').classList.toggle('open'); }
-        
-        const tilt = document.getElementById('tilt');
-        if(${config.enableTilt}) {
-            if (window.matchMedia("(pointer: fine)").matches) {
-                document.addEventListener('mousemove', (e) => {
-                    const x = (window.innerWidth / 2 - e.pageX) / 25;
-                    const y = (window.innerHeight / 2 - e.pageY) / 25;
-                    tilt.style.transform = \`rotateY(\${-x}deg) rotateX(\${y}deg)\`;
-                });
-            }
-            window.addEventListener('deviceorientation', (e) => {
-                if (e.beta && e.gamma) {
-                    const x = Math.min(Math.max(e.gamma, -30), 30) / 3;
-                    const y = Math.min(Math.max(e.beta - 45, -30), 30) / 3;
-                    tilt.style.transform = \`rotateY(\${x}deg) rotateX(\${-y}deg)\`;
-                }
-            }, true);
+        function nav(u) { 
+            if(u.includes('script.google.com')) window.top.location.href = u; 
+            else window.open(u, '_blank'); 
         }
+        function toggleS() { document.getElementById('sheet').classList.toggle('open'); }
+
+        ${config.enableTilt ? `
+        const tilt = document.getElementById('tilt');
+        if (window.matchMedia("(pointer: fine)").matches) {
+            document.addEventListener('mousemove', (e) => {
+                const x = (window.innerWidth / 2 - e.pageX) / 25;
+                const y = (window.innerHeight / 2 - e.pageY) / 25;
+                tilt.style.transform = \`rotateY(\${-x}deg) rotateX(\${y}deg)\`;
+            });
+        }
+        window.addEventListener('deviceorientation', (e) => {
+            if (e.beta && e.gamma) {
+                const x = Math.min(Math.max(e.gamma, -30), 30) / 3;
+                const y = Math.min(Math.max(e.beta - 45, -30), 30) / 3;
+                tilt.style.transform = \`rotateY(\${x}deg) rotateX(\${-y}deg)\`;
+            }
+        }, true);
+        ` : ''}
 
         function initFX() {
             const canvas = document.getElementById('bg-canvas');
@@ -345,7 +1011,7 @@ const App = () => {
         window.onload = initFX;
 
         function saveV() {
-            const v = ["BEGIN:VCARD", "VERSION:3.0", "FN:${config.name}", "ORG:${config.tagline}", "TEL:${config.links.phone}", "EMAIL:${config.links.email}", "URL:${config.links.website}", "END:VCARD"].join("\\r\\n");
+            const v = ["BEGIN:VCARD", "VERSION:3.0", "FN:${config.name}", "ORG:${config.tagline}", "TEL:+61422730144", "EMAIL:hello@knightlyphotobooth.com.au", "URL:https://knightlyphotobooth.com.au", "END:VCARD"].join("\r\n");
             const b = new Blob([v], {type: 'text/vcard'});
             const u = URL.createObjectURL(b);
             const l = document.createElement('a'); l.href = u; l.download = "${config.name.replace(/\s+/g, '_')}.vcf"; l.click();
@@ -353,127 +1019,44 @@ const App = () => {
     <\/script>
 </body>
 </html>`;
-    }, [config]);
+        }
 
-    const copyToClipboard = () => {
-        const textArea = document.createElement('textarea');
-        textArea.value = generatedHtml;
-        document.body.appendChild(textArea);
-        textArea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textArea);
-        setCopySuccess(true);
-        setTimeout(() => setCopySuccess(false), 2000);
-    };
+        // Update preview
+        function updateConfig() {
+            // Update value displays
+            document.getElementById('val-front').textContent = document.getElementById('slider-front').value + 's';
+            document.getElementById('val-back').textContent = document.getElementById('slider-back').value + 's';
+            document.getElementById('val-glow').textContent = document.getElementById('slider-glow').value + 'px';
+            document.getElementById('hex-bg').textContent = document.getElementById('color-bg').value;
+            document.getElementById('hex-gold').textContent = document.getElementById('color-gold').value;
 
-    return (
-        <div className="flex h-screen bg-neutral-900 overflow-hidden font-sans">
-            {/* Sidebar Controls */}
-            <aside className={`bg-neutral-950 border-r border-neutral-800 flex flex-col h-full transition-all duration-300 z-30 ${showConfig ? 'w-full lg:w-96' : 'w-0 overflow-hidden'}`}>
-                <div className="p-6 border-b border-neutral-800 flex justify-between items-center bg-neutral-950">
-                    <span className="text-xl font-bold flex items-center gap-2 text-amber-500"><Zap className="w-5 h-5 fill-current" /> Builder</span>
-                    <button onClick={copyToClipboard} className="flex items-center gap-2 px-4 py-2 bg-amber-500 hover:bg-amber-400 text-black rounded-lg text-sm font-bold shadow-lg active:scale-95 transition-all">
-                        {copySuccess ? <Check size={16} /> : <Copy size={16} />} {copySuccess ? 'Copied' : 'Get HTML'}
-                    </button>
-                </div>
+            // Update iframe
+            const html = generateCardHTML();
+            const blob = new Blob([html], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            document.getElementById('preview-frame').src = url;
+        }
 
-                <nav className="flex bg-neutral-950/50 overflow-x-auto no-scrollbar">
-                    {[
-                        { id: 'content', icon: <Type size={14} />, label: 'Text' },
-                        { id: 'motion', icon: <Move size={14} />, label: 'Motion' },
-                        { id: 'fx', icon: <Sparkles size={14} />, label: 'Effects' },
-                        { id: 'style', icon: <Palette size={14} />, label: 'Theme' },
-                        { id: 'media', icon: <ImageIcon size={14} />, label: 'Media' },
-                        { id: 'vis', icon: <Eye size={14} />, label: 'Vis' },
-                    ].map(tab => (
-                        <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`flex-1 min-w-[70px] py-4 text-[8px] uppercase tracking-widest font-bold border-b-2 transition-all ${activeTab === tab.id ? 'border-amber-500 text-amber-500 bg-neutral-900/50' : 'border-transparent text-neutral-500'}`}>
-                            <div className="flex flex-col items-center">{tab.icon}<span className="mt-1">{tab.label}</span></div>
-                        </button>
-                    ))}
-                </nav>
+        // Copy HTML to clipboard
+        function copyHTML() {
+            const html = generateCardHTML();
+            navigator.clipboard.writeText(html).then(() => {
+                const btn = document.getElementById('copyBtn');
+                const toast = document.getElementById('toast');
+                btn.classList.add('copied');
+                btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Copied!';
+                toast.classList.add('show');
 
-                <div className="flex-1 overflow-y-auto p-6 space-y-6">
-                    {activeTab === 'content' && (
-                        <div className="space-y-4">
-                            <Input label="Display Name" value={config.name} onChange={v => handleTopLevelChange('name', v)} />
-                            <Input label="Luxury Tagline" value={config.tagline} onChange={v => handleTopLevelChange('tagline', v)} />
-                            <Input label="Client Review" value={config.review} onChange={v => handleTopLevelChange('review', v)} />
-                            <Input label="Footer Location" value={config.footer} onChange={v => handleTopLevelChange('footer', v)} />
-                        </div>
-                    )}
-                    {activeTab === 'motion' && (
-                        <div className="space-y-6">
-                            <Slider label="Pause Front (s)" value={config.spinPauseFront} min={0} max={10} step={0.5} onChange={v => handleTopLevelChange('spinPauseFront', v)} />
-                            <Slider label="Pause Back (s)" value={config.spinPauseBack} min={0} max={10} step={0.5} onChange={v => handleTopLevelChange('spinPauseBack', v)} />
-                            <Toggle label="3D Tilt" desc="Interactive parallax" checked={config.enableTilt} onChange={v => handleTopLevelChange('enableTilt', v)} />
-                        </div>
-                    )}
-                    {activeTab === 'fx' && (
-                        <div className="space-y-6">
-                            <Slider label="Outer Glow" value={config.glowStrength} min={0} max={150} step={5} onChange={v => handleTopLevelChange('glowStrength', v)} />
-                            <Toggle label="Light Sweep" checked={config.enableSweep} onChange={v => handleTopLevelChange('enableSweep', v)} />
-                            <select value={config.bgEffect} onChange={(e) => handleTopLevelChange('bgEffect', e.target.value)} className="w-full bg-neutral-900 border border-neutral-800 rounded-xl px-4 py-3 text-xs text-white">
-                                <option value="bokeh">Luxury Bokeh</option>
-                                <option value="glitter">Golden Rain</option>
-                            </select>
-                        </div>
-                    )}
-                    {activeTab === 'style' && (
-                        <div className="grid grid-cols-2 gap-4">
-                            <Color label="BG Color" value={config.colors.bgDark} onChange={v => handleInputChange('colors', 'bgDark', v)} />
-                            <Color label="Accent Gold" value={config.colors.gold} onChange={v => handleInputChange('colors', 'gold', v)} />
-                        </div>
-                    )}
-                </div>
-            </aside>
+                setTimeout(() => {
+                    btn.classList.remove('copied');
+                    btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> Get HTML';
+                    toast.classList.remove('show');
+                }, 2000);
+            });
+        }
 
-            {/* Live Preview Wrapper */}
-            <main className="flex-1 flex flex-col items-center justify-center relative bg-[#0a0a0a]">
-                {!showConfig && (
-                    <button onClick={() => setShowConfig(true)} className="absolute left-0 top-1/2 -translate-y-1/2 bg-amber-500 text-black p-3 rounded-r-2xl shadow-2xl z-40"><PanelLeft size={20} /></button>
-                )}
-                <div className={`transition-all duration-1000 ${showConfig ? 'scale-[0.8]' : 'scale-100'}`}>
-                    <div className="w-[375px] h-[780px] bg-black rounded-[60px] shadow-2xl border-[14px] border-neutral-950 overflow-hidden relative">
-                        <iframe key={JSON.stringify(config)} title="Preview" srcDoc={generatedHtml} className="w-full h-full border-none" />
-                    </div>
-                </div>
-            </main>
-        </div>
-    );
-};
-
-const Slider = ({ label, value, min, max, step, onChange }) => (
-    <div className="space-y-2 p-4 bg-neutral-900 rounded-xl border border-neutral-800">
-        <div className="flex justify-between text-[10px] text-neutral-500 font-bold uppercase"><span>{label}</span><span className="text-amber-500">{value}s</span></div>
-        <input type="range" min={min} max={max} step={step} value={value} onChange={(e) => onChange(parseFloat(e.target.value))} className="w-full accent-amber-500" />
-    </div>
-);
-
-const Toggle = ({ label, desc, checked, onChange }) => (
-    <div className="flex items-center justify-between">
-        <div><div className="text-[11px] font-bold text-neutral-100">{label}</div><div className="text-[9px] text-neutral-500 uppercase">{desc}</div></div>
-        <label className="relative inline-flex items-center cursor-pointer">
-            <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} className="sr-only peer" />
-            <div className="w-10 h-5 bg-neutral-800 rounded-full peer-checked:bg-amber-500 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-neutral-400 after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-full peer-checked:after:bg-black"></div>
-        </label>
-    </div>
-);
-
-const Input = ({ label, value, onChange }) => (
-    <div className="space-y-1.5">
-        <label className="text-[10px] text-neutral-500 font-bold uppercase tracking-widest">{label}</label>
-        <input type="text" value={value} onChange={(e) => onChange(e.target.value)} className="w-full bg-neutral-900 border border-neutral-800 rounded-xl px-4 py-3 text-xs text-neutral-100" />
-    </div>
-);
-
-const Color = ({ label, value, onChange }) => (
-    <div className="space-y-1.5">
-        <label className="text-[10px] text-neutral-500 font-bold uppercase tracking-widest">{label}</label>
-        <div className="flex items-center gap-3 bg-neutral-900 border border-neutral-800 rounded-xl p-2">
-            <input type="color" value={value} onChange={(e) => onChange(e.target.value)} className="w-8 h-8 rounded-lg bg-transparent cursor-pointer" />
-            <span className="text-[10px] font-mono text-neutral-400 uppercase">{value}</span>
-        </div>
-    </div>
-);
-
-export default App;
+        // Initial load
+        updateConfig();
+    </script>
+</body>
+</html>
